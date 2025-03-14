@@ -26,18 +26,50 @@ public class HomeController : Controller
     {
         //Mengambil semua data dari tabel Expenses dan kemudian disimpan ke dalam allExpenses dalam bentuk list "ToList()"
         var allExpenses = _context.Expenses.ToList();
+        var totalExpenses = allExpenses.Sum(x => x.Value);
+
+        ViewBag.Expenses = totalExpenses;
         return View(allExpenses);
     }
 
-    public IActionResult CreateEditExpense()
+    public IActionResult CreateEditExpense(int? id)
     {
+        if(id != null)
+        {
+            //Jika id tidak null, maka akan mengedit
+            var expenseInDb = _context.Expenses.SingleOrDefault(expense => expense.Id == id);
+            return View(expenseInDb);
+        }
+        //Jika id null, maka akan membuat baru
         return View();
+    }
+
+    public IActionResult DeleteExpense(int id)
+    {
+        //Mencari satu data dari tabel Expenses yang memiliki Id yang sesuai dengan parameter id
+        var expenseInDb = _context.Expenses.SingleOrDefault(expense => expense.Id == id);
+        _context.Expenses.Remove(expenseInDb);
+        _context.SaveChanges();
+        //setelah menghapus sesuatu, kita mau user kembali ke page Overview/Expenses
+        return RedirectToAction("Expenses");
     }
 
     public IActionResult CreateEditExpenseForm(Expense model)
     {
-        _context.Expenses.Add(model);
-        _context.SaveChanges();
+        if (model.Id == 0)
+        {
+            //Kalau tidak ada id yang cocok, kita create
+            //Add berguna untuk membuat Id secara otomatis dan incremental
+            _context.Expenses.Add(model);
+
+        }
+        else
+        {
+            //Kalau id ada, kita edit
+            _context.Expenses.Update(model);
+        }
+
+            _context.SaveChanges();
 
         //Akan menuju ke Index yang ada di bagian atas pada kode ini
         return RedirectToAction("Expenses");
