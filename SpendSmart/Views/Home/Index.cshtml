@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Haloges</h1>
+    @{
+        //Jika file tujuan berada di folder yang sama, boleh tidak menggunakan asp-controller
+    }
+    <a asp-controller="Home" asp-action="Expenses" class="btn btn-primary">Overview</a> 
+    <a asp-action="CreateEditExpense" class="btn btn-secondary">Create New</a>
+</div>
